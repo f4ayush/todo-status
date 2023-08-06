@@ -15,7 +15,7 @@ import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AddIcon from "@mui/icons-material/Add";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 function TodoGroup() {
   const groups = useSelector(getGroups);
@@ -25,28 +25,45 @@ function TodoGroup() {
     dispatch(createGroup({ id: uuidv4(), from: 0, to: 0 }));
   };
   const updateFrom = (event, gId) => {
-    dispatch(
-      editGroup({ value: parseInt(event.target.value) || 0, gId, from: true })
-    );
+    if (!isNaN(parseInt(event.target.value)) || event.target.value == "") {
+      dispatch(
+        editGroup({ value: parseInt(event.target.value) || 0, gId, from: true })
+      );
+    }
   };
 
   const updateTo = (event, gId) => {
-    dispatch(
-      editGroup({ value: parseInt(event.target.value) || 0, gId, to: true })
-    );
+    if (!isNaN(parseInt(event.target.value)) || event.target.value == "") {
+      dispatch(
+        editGroup({ value: parseInt(event.target.value) || 0, gId, to: true })
+      );
+    }
   };
   return (
     <Box>
       {groups.groups.map((group, index) => (
-        <Stack key={group.id} direction="row" gap="10%" flexWrap="wrap">
-          <Stack direction="row" gap="0">
+        <Stack
+          key={group.id}
+          direction="row"
+          gap="10%"
+          flexWrap="wrap"
+          sx={{ marginBottom: "5px" }}
+        >
+          <Stack
+            direction="row"
+            gap="0"
+            alignItems="center"
+            width="fit-content"
+          >
             {console.log(group)}
             <DeleteIcon onClick={() => dispatch(deleteGroup(group.id))} />
-            <Stack direction="row">
-              <Button variant="outlined">{`Group ${index+1}`}</Button>
+            <Stack direction="row" sx={{ height: "50px" }}>
+              <Button variant="outlined" sx={{ height: "50px" }}>{`Group ${
+                index + 1
+              }`}</Button>
               <TextField
-                hiddenLabel
                 variant="outlined"
+                sx={{ width: "50px", height: "50px" }}
                 value={group.from}
                 onChange={(e) => updateFrom(e, group.id)}
               />
@@ -56,17 +73,29 @@ function TodoGroup() {
               <TextField
                 variant="outlined"
                 value={group.to}
+                sx={{ width: "50px", height: "50px" }}
                 onChange={(e) => updateTo(e, group.id)}
               />
             </Stack>
           </Stack>
-            <Typography sx={{ border:"1px solid gray", borderRadius:"2px", padding: "10px 5px" }}>{group.status}</Typography>
+          <Typography
+            sx={{
+              border: "1px solid gray",
+              borderRadius: "2px",
+              padding: "10px 5px",
+              width: "40%",
+            }}
+          >
+            {group.status}
+          </Typography>
         </Stack>
       ))}
       {groups.error && <Alert severity="error">{groups.error}</Alert>}
-      <Typography sx={{ cursor: "pointer" }} onClick={handleAddGroup}>
-        <AddIcon /> Add Items
-      </Typography>
+      {groups.groups.length < 5 && (
+        <Typography sx={{ cursor: "pointer" }} onClick={handleAddGroup}>
+          <AddIcon /> Add Items
+        </Typography>
+      )}
     </Box>
   );
 }

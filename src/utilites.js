@@ -16,15 +16,17 @@ export const isPartitionValid  = (groups) => {
       const currentSubset = sortedArr[i];
       const nextSubset = sortedArr[i + 1];
   
+      // Check for overlap
+      if (currentSubset[1] >= nextSubset[0]) {
+        return {isValid:false, errorMessage: "There is a overlap in todos"};
+      }
+      
       // Check for gaps
       if (currentSubset[1] + 1 !== nextSubset[0]) {
         return {isValid:false, errorMessage: "There is a gap between todos"};
       }
   
-      // Check for overlap
-      if (currentSubset[1] >= nextSubset[0]) {
-        return {isValid:false, errorMessage: "There is a overlap in todos"};
-      }
+      
     }
     // All rules are satisfied
     return {isValid:true, errorMessage: ""};
