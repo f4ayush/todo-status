@@ -1,9 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios"
 
 const initialState = {
-    todos: [],
-    status: "idle",
+  todos: [],
+  status: "idle",
 }
 
 export const todoSlice = createSlice({
@@ -20,22 +19,17 @@ export const todoSlice = createSlice({
         state.status = 'idle';
         state.todos = action.payload;
       })
-    }
+  }
 });
 
 export const fetchTodosAsync = createAsyncThunk(
-    'todo/fetchTodo',
-    async () => {
-        const response = await axios({
-            method: "get",
-            url: "https://jsonplaceholder.typicode.com/todos",
-            params: {
-              _limit: 10,
-            },
-          });
-          return response.data
-    }
-  );
+  'todo/fetchTodo',
+  async () => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10', { method: "get" }).then(res => res.json());
+    // console.info(response)
+    return response;
+  }
+);
 
 export default todoSlice.reducer;
 

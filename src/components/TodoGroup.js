@@ -39,8 +39,9 @@ function TodoGroup() {
       );
     }
   };
+
   return (
-    <Box>
+    <Box data-testid="group-container">
       {groups.groups.map((group, index) => (
         <Stack
           key={group.id}
@@ -48,6 +49,7 @@ function TodoGroup() {
           gap="10%"
           flexWrap="wrap"
           sx={{ marginBottom: "5px" }}
+          data-testid="group-item"
         >
           <Stack
             direction="row"
@@ -55,15 +57,15 @@ function TodoGroup() {
             alignItems="center"
             width="fit-content"
           >
-            {console.log(group)}
-            <DeleteIcon onClick={() => dispatch(deleteGroup(group.id))} />
+            {/* {console.log(group)} */}
+            <DeleteIcon data-testid="delete-btn" onClick={() => dispatch(deleteGroup(group.id))} />
             <Stack direction="row" sx={{ height: "50px" }}>
-              <Button variant="outlined" sx={{ height: "50px" }}>{`Group ${
-                index + 1
-              }`}</Button>
+              <Button variant="outlined" sx={{ height: "50px" }}>{`Group ${index + 1
+                }`}</Button>
               <TextField
                 variant="outlined"
-                sx={{ width: "50px"}}
+                sx={{ width: "50px" }}
+                data-testid="from"
                 inputProps={{
                   style: {
                     width: "50px",
@@ -80,7 +82,8 @@ function TodoGroup() {
               <TextField
                 variant="outlined"
                 value={group.to}
-                sx={{ width: "50px"}}
+                sx={{ width: "50px" }}
+                data-testid="to"
                 inputProps={{
                   style: {
                     width: "50px",
@@ -93,6 +96,7 @@ function TodoGroup() {
             </Stack>
           </Stack>
           <Typography
+            data-testid="status"
             sx={{
               border: "1px solid gray",
               borderRadius: "2px",
@@ -104,10 +108,10 @@ function TodoGroup() {
           </Typography>
         </Stack>
       ))}
-      {groups.error && <Alert severity="error">{groups.error}</Alert>}
+      {groups.error && <Alert severity="error" data-testid="error">{groups.error}</Alert>}
       {groups.groups.length < 5 && (
-        <Stack sx={{ cursor: "pointer", margin:"8px 0" }} direction="row" alignItems="center" variant="div" onClick={handleAddGroup}>
-          <AddIcon /> 
+        <Stack sx={{ cursor: "pointer", margin: "8px 0" }} direction="row" alignItems="center" variant="div" data-testid="addBtn" onClick={handleAddGroup}>
+          <AddIcon />
           <Typography>Add Items</Typography>
         </Stack>
       )}

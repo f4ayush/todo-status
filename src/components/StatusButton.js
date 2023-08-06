@@ -8,7 +8,7 @@ function StatusButton() {
   const todos = useSelector(getTodos);
   const dispatch = useDispatch();
   return (
-    <Button variant="contained" onClick={()=>{dispatch(getStatus({groups: groups.groups, todos}))}}>Status Button</Button>
+    <Button variant="contained" data-testid="status-btn" onClick={()=>{dispatch(getStatus({groups: groups.groups, todos}))}}>Status Button</Button>
   )
 }
 
