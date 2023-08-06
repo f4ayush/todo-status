@@ -63,7 +63,14 @@ function TodoGroup() {
               }`}</Button>
               <TextField
                 variant="outlined"
-                sx={{ width: "50px", height: "50px" }}
+                sx={{ width: "50px"}}
+                inputProps={{
+                  style: {
+                    width: "50px",
+                    height: "50px",
+                    padding: "0.5px 14px"
+                  },
+                }}
                 value={group.from}
                 onChange={(e) => updateFrom(e, group.id)}
               />
@@ -73,7 +80,14 @@ function TodoGroup() {
               <TextField
                 variant="outlined"
                 value={group.to}
-                sx={{ width: "50px", height: "50px" }}
+                sx={{ width: "50px"}}
+                inputProps={{
+                  style: {
+                    width: "50px",
+                    height: "50px",
+                    padding: "0.5px 14px"
+                  },
+                }}
                 onChange={(e) => updateTo(e, group.id)}
               />
             </Stack>
@@ -92,9 +106,10 @@ function TodoGroup() {
       ))}
       {groups.error && <Alert severity="error">{groups.error}</Alert>}
       {groups.groups.length < 5 && (
-        <Typography sx={{ cursor: "pointer" }} onClick={handleAddGroup}>
-          <AddIcon /> Add Items
-        </Typography>
+        <Stack sx={{ cursor: "pointer", margin:"8px 0" }} direction="row" alignItems="center" variant="div" onClick={handleAddGroup}>
+          <AddIcon /> 
+          <Typography>Add Items</Typography>
+        </Stack>
       )}
     </Box>
   );
