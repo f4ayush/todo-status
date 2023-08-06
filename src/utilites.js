@@ -1,12 +1,12 @@
 export const isPartitionValid  = (groups) => {
     // Rule 1: Check if the entire range of 1-10 is covered
-    console.log(groups)
-  
     const groupArr = groups.map((group) => [group.from, group.to]);
     const sortedGroups = groupArr.flat().sort((a, b) => a - b);
     const sortedArr = groupArr.sort((a, b) => a[0] - b[0]);
   
-    console.log(sortedGroups);
+    if(sortedGroups[sortedGroups.length - 1] > 10){
+      return {isValid:false, errorMessage: "Max value can't be greater than 10"};
+    }
     if (sortedGroups[0] !== 1 || sortedGroups[sortedGroups.length - 1] !== 10) {
       return {isValid:false, errorMessage: "All todos not present"};
     }

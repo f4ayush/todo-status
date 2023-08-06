@@ -1,12 +1,11 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import { createSlice } from "@reduxjs/toolkit";
 import { isPartitionValid } from "../../utilites";
 
 const initialState = {
   groups: [],
   isValid: true,
   status: "idle",
-  error: ""
+  error: "",
 };
 export const todoSlice = createSlice({
   initialState,
@@ -18,16 +17,16 @@ export const todoSlice = createSlice({
       state.groups = newState;
     },
     editGroup: (state, action) => {
-      state.groups = state.groups.map(group=>{
-        if(group.id == action.payload.gId){
-          if(action.payload.from){
-            group.from = action.payload.value
-          }else if(action.payload.to){
-            group.to = action.payload.value
+      state.groups = state.groups.map((group) => {
+        if (group.id == action.payload.gId) {
+          if (action.payload.from) {
+            group.from = action.payload.value;
+          } else if (action.payload.to) {
+            group.to = action.payload.value;
           }
         }
-        return group
-      })
+        return group;
+      });
     },
     deleteGroup: (state, action) => {
       console.log(action.payload);
@@ -35,48 +34,33 @@ export const todoSlice = createSlice({
         (group) => group.id != action.payload
       );
       state.groups = newGroups;
-    },    
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(getStatusAsync.pending, (state) => {
-        state.status = "loading";
-      })
-      .addCase(getStatusAsync.fulfilled, (state, action) => {
-        state.status = "idle";
-        state.groups = action.payload.groups;
-        state.error = action.payload.error;
-      });
+    },
+    getStatus: (state, action) => {
+      console.log(action);
+      let { groups, todos } = action.payload;
+      console.log(todos);
+      const partitionCheck = isPartitionValid(groups);
+      if (partitionCheck.isValid) {
+        const updatedGroup = groups.map((group) => {
+          let status = "";
+          for (let i = group.from; i <= group.to; i++) {
+            let completed = todos[i - 1]["completed"];
+            status += `(${i}) ${completed},`;
+          }
+          return { ...group, status };
+        });
+        state.groups = updatedGroup;
+        state.error = "";
+      } else {
+        state.groups = groups;
+        state.error = partitionCheck.errorMessage;
+      }
+    },
   },
 });
 
-export const { deleteGroup, createGroup, editGroup } = todoSlice.actions;
+export const { deleteGroup, createGroup, editGroup, getStatus } =
+  todoSlice.actions;
 export default todoSlice.reducer;
 
 export const getGroups = (state) => state.groups;
-
-
-
-export const getStatusAsync = createAsyncThunk(
-  "groups/fetchStatus",
-  async (groups, todos) => {
-    const partitionCheck = isPartitionValid(groups)
-    if (partitionCheck.isValid) {
-      const updatedGroup = await groups.map(async (group) => {
-        let status = "";
-        for (let i = group.from; i <= group.to; i++) {
-          const response = await axios({
-            method: "get",
-            url: `https://jsonplaceholder.typicode.com/todos/${i}`,
-          });
-          status += `(${i}) ${response.data.completed},`;
-        }
-        return { ...group, status };
-      });
-      console.log(await Promise.all(updatedGroup))
-      return {groups: await Promise.all(updatedGroup), error: ''}
-    }else{
-      return {groups, error: partitionCheck.errorMessage}
-    }
-  }
-);
