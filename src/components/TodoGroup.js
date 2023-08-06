@@ -60,10 +60,10 @@ function TodoGroup() {
     );
   };
   return (
-    <Box maxWidth="sm">
+    <Box>
       {groups.groups.map((group) => (
-        <Stack key={group.id} direction="row" useFlexGap flexWrap="wrap">
-          <Stack direction="row" gap="10%">
+        <Stack key={group.id} direction="row" gap="10%" flexWrap="wrap">
+          <Stack direction="row" gap="0">
             {console.log(group)}
             <DeleteIcon onClick={() => dispatch(deleteGroup(group.id))} />
             <Stack direction="row">
@@ -83,8 +83,8 @@ function TodoGroup() {
                 onChange={(e) => updateTo(e, group.id)}
               />
             </Stack>
-            <Typography sx={{ cursor: "pointer" }}>{group.status}</Typography>
           </Stack>
+            <Typography sx={{ border:"1px solid gray", borderRadius:"2px", padding: "10px 5px" }}>{group.status}</Typography>
         </Stack>
       ))}
 
