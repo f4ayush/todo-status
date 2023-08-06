@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   createGroup,
@@ -15,59 +15,35 @@ import Alert from "@mui/material/Alert";
 import Typography from "@mui/material/Typography";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import AddIcon from "@mui/icons-material/Add";
+import { v4 as uuidv4 } from 'uuid';
 
 function TodoGroup() {
   const groups = useSelector(getGroups);
   const dispatch = useDispatch();
-  const [groupDetail, setGroupDetail] = useState([]);
-
-  useEffect(() => {
-    setGroupDetail(groups.groups);
-  }, [groups]);
 
   const handleAddGroup = (e) => {
-    dispatch(createGroup({ id: groups.groups.length + 1, from: 0, to: 0 }));
+    dispatch(createGroup({ id: uuidv4(), from: 0, to: 0 }));
   };
   const updateFrom = (event, gId) => {
-    console.log(event.target.value);
-    const newGroups = groupDetail.map((group) => {
-      if (group.id == gId) {
-        console.log("yes");
-        return { ...group, from: event.target.value };
-      }
-      return group;
-    });
-
     dispatch(
       editGroup({ value: parseInt(event.target.value) || 0, gId, from: true })
     );
-
-    setGroupDetail(newGroups);
   };
 
   const updateTo = (event, gId) => {
-    console.log(event.target.value);
-    const newGroups = groupDetail.map((group) => {
-      if (group.id == gId) {
-        console.log("yes");
-        return { ...group, to: event.target.value };
-      }
-      return group;
-    });
-    setGroupDetail(newGroups);
     dispatch(
       editGroup({ value: parseInt(event.target.value) || 0, gId, to: true })
     );
   };
   return (
     <Box>
-      {groups.groups.map((group) => (
+      {groups.groups.map((group, index) => (
         <Stack key={group.id} direction="row" gap="10%" flexWrap="wrap">
           <Stack direction="row" gap="0">
             {console.log(group)}
             <DeleteIcon onClick={() => dispatch(deleteGroup(group.id))} />
             <Stack direction="row">
-              <Button variant="outlined">{`Group ${group.id}`}</Button>
+              <Button variant="outlined">{`Group ${index+1}`}</Button>
               <TextField
                 hiddenLabel
                 variant="outlined"
@@ -87,7 +63,6 @@ function TodoGroup() {
             <Typography sx={{ border:"1px solid gray", borderRadius:"2px", padding: "10px 5px" }}>{group.status}</Typography>
         </Stack>
       ))}
-
       {groups.error && <Alert severity="error">{groups.error}</Alert>}
       <Typography sx={{ cursor: "pointer" }} onClick={handleAddGroup}>
         <AddIcon /> Add Items
