@@ -17,6 +17,7 @@ export const todoSlice = createSlice({
       state.groups = newState;
     },
     editGroup: (state, action) => {
+      let previousFrom = 0, previousTo = 0
       state.groups = state.groups.map((group) => {
         if (group.id == action.payload.gId) {
           if (action.payload.from) {
@@ -24,8 +25,25 @@ export const todoSlice = createSlice({
           } else if (action.payload.to) {
             group.to = action.payload.value;
           }
-          group.error = action.payload.error;
         }
+        if(group.from <= previousTo){
+          state.error = "overlap found";
+          group.error = true
+        }else if(group.from - previousTo > 1){
+          state.error = "gap found";
+          group.error = true
+        }else if(group.to < group.from){
+          state.error = "end can not be smaller than start";
+          group.error = true
+        }else if(group.to >10 || group.from > 10){
+          state.error = "values cant be greater than 10";
+          group.error = true
+        }else{
+          group.error = false
+          state.error = ""
+        }
+        previousFrom = group.from;
+        previousTo = group.to
         return group;
       });
     },
@@ -64,11 +82,14 @@ export const todoSlice = createSlice({
 
         console.log(partitionCheck, state.error,state.groups, "partition")
       }
+    },
+    setError:(state, action)=>{
+      state.error = action.payload
     }
   },
 });
 
-export const { deleteGroup, createGroup, editGroup, getStatus } =
+export const { deleteGroup, createGroup, editGroup, getStatus, setError } =
   todoSlice.actions;
 export default todoSlice.reducer;
 
