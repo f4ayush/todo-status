@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   createGroup,
   getGroups,
   deleteGroup,
-  editGroup,
+  editGroup
 } from "../redux/slices/groups";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
@@ -20,9 +20,17 @@ import { v4 as uuidv4 } from "uuid";
 function TodoGroup() {
   const groups = useSelector(getGroups);
   const dispatch = useDispatch();
+  const [error, setError] = useState("")
 
   const handleAddGroup = (e) => {
-    dispatch(createGroup({ id: uuidv4(), from: 0, to: 0 }));
+    let nextIndex = groups.groups[groups.groups.length - 1].to + 1
+    if(nextIndex <= 10 && error == ""){
+      dispatch(createGroup({ id: uuidv4(), from: nextIndex, to: 10 }));
+    }else{
+      // set error
+      setError("Max value can't be greate than 10, can't add more rows")
+    }
+
   };
   const updateFrom = (event, gId) => {
     if (!isNaN(parseInt(event.target.value)) || event.target.value == "") {
@@ -32,10 +40,18 @@ function TodoGroup() {
     }
   };
 
-  const updateTo = (event, gId) => {
+  const updateTo = (event, gId, from) => {
     if (!isNaN(parseInt(event.target.value)) || event.target.value == "") {
+      let toValue = parseInt(event.target.value) || 0;
+      if(from > toValue){
+        setError("end range can't be lesser than start")
+        console.log("if", from)
+      }else{
+        setError("")
+        console.log("else", error)
+      }
       dispatch(
-        editGroup({ value: parseInt(event.target.value) || 0, gId, to: true })
+        editGroup({ value: parseInt(event.target.value) || 0, gId, to: true, error: error? true: false })
       );
     }
   };
@@ -57,7 +73,6 @@ function TodoGroup() {
             alignItems="center"
             width="fit-content"
           >
-            {/* {console.log(group)} */}
             <DeleteIcon data-testid="delete-btn" onClick={() => dispatch(deleteGroup(group.id))} />
             <Stack direction="row" sx={{ height: "50px" }}>
               <Button variant="outlined" sx={{ height: "50px" }}>{`Group ${index + 1
@@ -66,6 +81,7 @@ function TodoGroup() {
                 variant="outlined"
                 sx={{ width: "50px" }}
                 data-testid="from"
+                disabled
                 inputProps={{
                   style: {
                     width: "50px",
@@ -84,6 +100,7 @@ function TodoGroup() {
                 value={group.to}
                 sx={{ width: "50px" }}
                 data-testid="to"
+                error={group.error? true: false}
                 inputProps={{
                   style: {
                     width: "50px",
@@ -91,9 +108,12 @@ function TodoGroup() {
                     padding: "0.5px 14px"
                   },
                 }}
-                onChange={(e) => updateTo(e, group.id)}
+                onChange={(e) => updateTo(e, group.id, group.from)}
               />
             </Stack>
+            <p>{
+              group.error
+            }</p>
           </Stack>
           <Typography
             data-testid="status"
@@ -108,7 +128,9 @@ function TodoGroup() {
           </Typography>
         </Stack>
       ))}
-      {groups.error && <Alert severity="error" data-testid="error">{groups.error}</Alert>}
+      
+      {(groups.error) && <Alert severity="error" data-testid="error">{groups.error}</Alert>}
+      {(error) && <Alert severity="error" data-testid="error">{error}</Alert>}
       {groups.groups.length < 5 && (
         <Stack sx={{ cursor: "pointer", margin: "8px 0" }} direction="row" alignItems="center" variant="div" data-testid="addBtn" onClick={handleAddGroup}>
           <AddIcon />

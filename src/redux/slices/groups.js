@@ -24,6 +24,7 @@ export const todoSlice = createSlice({
           } else if (action.payload.to) {
             group.to = action.payload.value;
           }
+          group.error = action.payload.error;
         }
         return group;
       });
@@ -52,10 +53,18 @@ export const todoSlice = createSlice({
         state.groups = updatedGroup;
         state.error = "";
       } else {
-        state.groups = groups;
+        state.groups = groups.map((group, index)=>{
+          if(index == partitionCheck.index){
+            return {...group, error:true};
+          }else{
+            return {...group, error:false};
+          }
+        });
         state.error = partitionCheck.errorMessage;
+
+        console.log(partitionCheck, state.error,state.groups, "partition")
       }
-    },
+    }
   },
 });
 
